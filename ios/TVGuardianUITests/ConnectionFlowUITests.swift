@@ -47,6 +47,8 @@ final class ConnectionFlowUITests: XCTestCase {
         let save = app.buttons["manualTVSave"]; reveal(save); save.tap()
         XCTAssertTrue(app.buttons["pairSavedTV"].waitForExistence(timeout: 8), "Save must immediately show a selected TV ready to pair.")
         XCTAssertTrue(app.staticTexts["UI fixture TV"].exists)
+        app.buttons["selectSavedTV"].tap()
+        XCTAssertFalse(app.buttons["Remove pairing and its Guardian rules"].exists, "Selecting a saved TV must not invoke the other actions in its Form row.")
         let screenshot = XCTAttachment(screenshot: app.screenshot()); screenshot.name = "Saved TV ready for pairing"; screenshot.lifetime = .keepAlways; add(screenshot)
         app.terminate(); app.launch(); unlockParent(); openConnections()
         XCTAssertTrue(app.buttons["pairSavedTV"].waitForExistence(timeout: 5), "The saved TV must survive process restart.")

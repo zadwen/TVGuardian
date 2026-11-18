@@ -23,13 +23,13 @@ struct ConnectionForm: View {
                 if model.state.tvs.isEmpty { Text("No TVs saved. Add a private IP or choose a discovery candidate.").foregroundStyle(.secondary) }
                 ForEach(model.state.tvs) { tv in
                     VStack(alignment: .leading, spacing: 8) {
-                        Button { model.selectTV(tv.id) } label: { HStack { Text(tv.name); Spacer(); if model.state.selectedTVID == tv.id { Image(systemName: "checkmark.circle.fill") } } }
+                        Button { model.selectTV(tv.id) } label: { HStack { Text(tv.name); Spacer(); if model.state.selectedTVID == tv.id { Image(systemName: "checkmark.circle.fill") } } }.accessibilityIdentifier("selectSavedTV")
                         Text("\(tv.host) • \(tv.model)").font(.caption).foregroundStyle(.secondary)
                         if model.state.selectedTVID == tv.id {
                             Button("Pair / reconnect") { model.pair() }.disabled(model.busy).accessibilityIdentifier("pairSavedTV")
                             Button("Remove local pairing & rules", role: .destructive) { removal = tv }.font(.footnote)
                         }
-                    }.padding(.vertical, 4)
+                    }.padding(.vertical, 4).buttonStyle(.borderless)
                 }
                 Text(model.connectionMessage).font(.footnote)
             }
