@@ -13,7 +13,7 @@ permissions:
   contents: read
 concurrency:
   group: tvguardian-iphone-build-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   iphone:
     runs-on: macos-latest
