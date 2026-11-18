@@ -1,0 +1,12 @@
+{
+  "name": "tv-guardian-home-bridge",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "setup": "node src/setup.mjs",
+    "start": "node src/server.mjs",
+    "test": "node --test test/*.test.mjs ../companion/test/*.test.mjs ../tools/test/*.test.mjs"
+  }
+}

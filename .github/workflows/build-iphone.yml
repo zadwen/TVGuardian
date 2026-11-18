@@ -1,0 +1,52 @@
+name: Build iPhone app for Windows installation
+on:
+  push:
+    branches: [build/iphone]
+  workflow_dispatch:
+    inputs:
+      bundle_identifier:
+        description: Keep this identifier unchanged for subsequent app updates
+        required: true
+        default: com.zadwen.TVGuardian
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: tvguardian-iphone-build-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  iphone:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Test, compile and package an unsigned device app
+        env:
+          TVGUARDIAN_BUNDLE_ID: ${{ inputs.bundle_identifier || 'com.zadwen.TVGuardian' }}
+        run: |
+          bash -n tools/build-iphone-cloud.sh
+          bash tools/build-iphone-cloud.sh
+      - name: Save successful device build for Windows signing
+        uses: actions/upload-artifact@v7
+        with:
+          name: TVGuardian-for-Windows-signing
+          path: |
+            build/cloud-artifacts/TVGuardian-unsigned.ipa
+            build/cloud-artifacts/TVGuardian-unsigned.ipa.sha256
+            build/cloud-artifacts/INSTALL-NEXT.txt
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+      - name: Save diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: TVGuardian-build-diagnostics
+          path: build/cloud-artifacts/*.log
+          if-no-files-found: ignore
+          retention-days: 3

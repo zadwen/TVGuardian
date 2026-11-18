@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="https://tvguardian.example/companion" version="0.1.0" viewmodes="maximized">
+  <tizen:application id="TvGuardian.Companion" package="TvGuardian" required_version="4.0"/>
+  <content src="index.html"/>
+  <name>TV Guardian Companion</name>
+  <icon src="icon.png"/>
+  <tizen:profile name="tv-samsung"/>
+  <tizen:privilege name="http://tizen.org/privilege/internet"/>
+  <tizen:privilege name="http://tizen.org/privilege/application.info"/>
+  <tizen:privilege name="http://tizen.org/privilege/package.info"/>
+  <!-- Replace this one origin and the index.html CSP before signing. -->
+  <access origin="https://guardian.home.example:8443" subdomains="false"/>
+  <tizen:setting screen-orientation="landscape" context-menu="disable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>

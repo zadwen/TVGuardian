@@ -1,0 +1,34 @@
+name: Verify source and iOS candidate
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: node --test bridge/test/*.test.mjs companion/test/*.test.mjs tools/test/*.test.mjs
+  ios:
+    # A macOS run is explicit so uploading source does not automatically start
+    # paid/quota-consuming Apple build jobs in a private repository.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Select an available iPhone simulator
+        run: |
+          xcrun simctl list devices available -j > /tmp/tvguardian-simulators.json
+          python3 - <<'PY' >> "$GITHUB_ENV"
+          import json
+          data = json.load(open('/tmp/tvguardian-simulators.json'))
+          phones = [d for ds in data['devices'].values() for d in ds if d['name'].startswith('iPhone')]
+          if not phones:
+              raise SystemExit('No iPhone simulator is installed')
+          print('TVGUARDIAN_SIMULATOR=' + phones[0]['udid'])
+          PY
+      - name: Build and execute XCTest
+        run: xcodebuild test -project ios/TVGuardian.xcodeproj -scheme TVGuardian -destination "platform=iOS Simulator,id=$TVGUARDIAN_SIMULATOR" -resultBundlePath build/TVGuardian.xcresult CODE_SIGNING_ALLOWED=NO
