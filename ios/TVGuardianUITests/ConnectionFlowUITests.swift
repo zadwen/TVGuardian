@@ -3,30 +3,46 @@ import XCTest
 /// Fresh simulator UI regressions. Authentication uses the real PIN gate;
 /// the shipping app has no test password, auth bypass or reset launch argument.
 final class ConnectionFlowUITests: XCTestCase {
-    private static let parentPIN: String = {
+    // Keep the random fixture in the test runner's own protected container so
+    // Xcode restarting that runner cannot generate a different enrolled PIN.
+    // This never reads/resets app data or adds a shipping authentication hook.
+    private static func fixturePIN() throws -> String {
+        let directory = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0].appendingPathComponent("TVGuardianUIFixture", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let file = directory.appendingPathComponent("parent-pin.txt")
+        if FileManager.default.fileExists(atPath: file.path) {
+            let saved = try String(contentsOf: file, encoding: .utf8)
+            guard saved.count == 8, saved.allSatisfy({ $0.isASCII && $0.isNumber }), Set(saved).count >= 3 else {
+                throw NSError(domain: "TVGuardianUITestFixture", code: 1, userInfo: [NSLocalizedDescriptionKey: "Invalid test-runner PIN fixture; use a fresh simulator."])
+            }
+            return saved
+        }
         var value = ""
         repeat { value = String(Int.random(in: 20_000_000...98_999_999)) } while Set(value).count < 3
+        try Data(value.utf8).write(to: file, options: [.atomic, .completeFileProtection])
         return value
-    }()
+    }
+    private var parentPIN = ""
     private var app: XCUIApplication!
     override func setUpWithError() throws {
         continueAfterFailure = false
+        parentPIN = try Self.fixturePIN()
         app = XCUIApplication(); app.launch()
         unlockParent()
     }
     override func tearDownWithError() throws {
-        if testRun?.hasSucceeded == false {
+        if (testRun?.failureCount ?? 0) > 0 {
             let screenshot = XCTAttachment(screenshot: app.screenshot()); screenshot.lifetime = .keepAlways; add(screenshot)
             let hierarchy = XCTAttachment(string: app.debugDescription); hierarchy.lifetime = .keepAlways; add(hierarchy)
         }
-        app.terminate()
+        if app.state != .notRunning { app.terminate() }
     }
     private func unlockParent() {
         let pin = app.secureTextFields["administratorPIN"]
         XCTAssertTrue(pin.waitForExistence(timeout: 12), "Parent authentication must be shown on a fresh launch/resume.")
-        pin.tap(); pin.typeText(Self.parentPIN)
+        pin.tap(); pin.typeText(parentPIN)
         let confirmation = app.secureTextFields["administratorPINConfirmation"]
-        if confirmation.exists { confirmation.tap(); confirmation.typeText(Self.parentPIN) }
+        if confirmation.exists { confirmation.tap(); confirmation.typeText(parentPIN) }
         reveal(app.buttons["unlockAdministrator"]); app.buttons["unlockAdministrator"].tap()
         XCTAssertTrue(app.buttons["manageConnection"].waitForExistence(timeout: 15), "Use a fresh simulator; UI tests never replace an existing administrator PIN.")
     }
@@ -69,6 +85,7 @@ final class ConnectionFlowUITests: XCTestCase {
         XCUIDevice.shared.press(.home); app.activate()
         XCTAssertTrue(app.secureTextFields["administratorPIN"].waitForExistence(timeout: 8))
         XCTAssertFalse(app.buttons["manualTVSave"].isHittable, "Management controls must not remain active behind a stale navigation destination.")
+        let screenshot = XCTAttachment(screenshot: app.screenshot()); screenshot.name = "Backgrounded app requires parent PIN"; screenshot.lifetime = .keepAlways; add(screenshot)
         unlockParent(); openConnections()
         XCTAssertFalse(app.staticTexts["Locked — TV channel disconnected"].exists, "The stale locked status must clear after authenticated unlock.")
         XCTAssertTrue(app.buttons["discoverTVs"].isEnabled)

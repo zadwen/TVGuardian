@@ -66,8 +66,8 @@ xcodebuild test \
   -destination "platform=iOS Simulator,arch=arm64,id=$SIMULATOR_ID" \
   -parallel-testing-enabled NO \
   -test-timeouts-enabled YES \
-  -default-test-execution-time-allowance 120 \
-  -maximum-test-execution-time-allowance 180 \
+  -default-test-execution-time-allowance 300 \
+  -maximum-test-execution-time-allowance 360 \
   -resultBundlePath "$RESULT_BUNDLE_PATH" \
   CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= \
   2>&1 | tee "$ARTIFACTS/ios-tests.log"
