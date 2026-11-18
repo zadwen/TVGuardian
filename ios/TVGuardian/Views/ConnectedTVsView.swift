@@ -63,7 +63,7 @@ struct ConnectionForm: View {
             }
         }.navigationTitle("Connected TVs").onDisappear { discovery.stop() }
             .scrollDismissesKeyboard(.interactively)
-            .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { manualField = nil } } }
+            .toolbar { ToolbarItemGroup(placement: .keyboard) { Spacer(); Button("Done") { manualField = nil }.accessibilityIdentifier("manualKeyboardDone") } }
             .confirmationDialog("Remove the local pairing?", isPresented: Binding(get: { removal != nil }, set: { if !$0 { removal = nil } }), titleVisibility: .visible) {
                 Button("Remove pairing and its Guardian rules", role: .destructive) { if let tv = removal { model.forgetTV(tv.id) }; removal = nil }
             } message: { Text("Saved app rules and schedules for this TV will be removed from the phone. Revoke this controller on the TV separately. No TV app is deleted.") }

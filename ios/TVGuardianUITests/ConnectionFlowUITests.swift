@@ -38,21 +38,30 @@ final class ConnectionFlowUITests: XCTestCase {
         for _ in 0..<6 { if element.isHittable { return }; app.swipeUp() }
         XCTAssertTrue(element.isHittable)
     }
+    private func finishManualEntry() {
+        let done = app.buttons["manualKeyboardDone"]
+        XCTAssertTrue(done.waitForExistence(timeout: 5), "Manual entry must provide a way to dismiss the keyboard.")
+        done.tap()
+        let dismissed = NSPredicate(format: "exists == false")
+        expectation(for: dismissed, evaluatedWith: app.keyboards.firstMatch)
+        waitForExpectations(timeout: 5)
+    }
     func testSaveTVPersistsAfterRelaunch() {
         openConnections()
         let name = app.textFields["manualTVName"], address = app.textFields["manualTVAddress"]
         reveal(name); name.tap(); name.typeText("UI fixture TV")
+        finishManualEntry()
         reveal(address); address.tap(); address.typeText("192.168.1.50")
-        if app.buttons["Done"].exists { app.buttons["Done"].tap() }
+        finishManualEntry()
         let save = app.buttons["manualTVSave"]; reveal(save); save.tap()
         XCTAssertTrue(app.buttons["pairSavedTV"].waitForExistence(timeout: 8), "Save must immediately show a selected TV ready to pair.")
-        XCTAssertTrue(app.staticTexts["UI fixture TV"].exists)
+        XCTAssertTrue(app.buttons["selectSavedTV"].label.contains("UI fixture TV"))
         app.buttons["selectSavedTV"].tap()
         XCTAssertFalse(app.buttons["Remove pairing and its Guardian rules"].exists, "Selecting a saved TV must not invoke the other actions in its Form row.")
         let screenshot = XCTAttachment(screenshot: app.screenshot()); screenshot.name = "Saved TV ready for pairing"; screenshot.lifetime = .keepAlways; add(screenshot)
         app.terminate(); app.launch(); unlockParent(); openConnections()
         XCTAssertTrue(app.buttons["pairSavedTV"].waitForExistence(timeout: 5), "The saved TV must survive process restart.")
-        XCTAssertTrue(app.staticTexts["UI fixture TV"].exists)
+        XCTAssertTrue(app.buttons["selectSavedTV"].label.contains("UI fixture TV"))
         // Never pair or send a command to the fixture address.
     }
     func testBackgroundRequiresParentPINBeforeFurtherManagement() {
