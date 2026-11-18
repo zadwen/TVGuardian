@@ -1,6 +1,7 @@
 # Verification record
 
-Date: 2026-11-18. Host: Windows, Node.js v26.13.1.
+Date: 2026-11-18. Local host: Windows, Node.js v26.13.1. Cloud host:
+GitHub macOS 26 ARM64, Xcode 26.6 (17F113), iPhone 17 Pro / iOS 26.4.1 simulator.
 
 | Check | Observed result |
 |---|---|
@@ -9,22 +10,31 @@ Date: 2026-11-18. Host: Windows, Node.js v26.13.1.
 | Xcode project parse | Passed Apache `xcode` 4.0.0 parser; 2 native targets |
 | Swift grammar | 29 files, 0 syntax errors with tree-sitter Swift grammar |
 | Info.plist, privacy manifest, Tizen XML | Parsed as XML |
-| iOS Xcode build/type checking | **Not run: no macOS/Xcode/Apple SDK** |
-| iOS XCTest | 26 cases supplied, **not run** |
+| iOS Xcode build/type checking | **Passed on GitHub's Mac, Xcode 26.6** |
+| iOS XCTest | **26 passed, 0 failed** in the iPhone simulator |
 | Native SwiftUI visual/accessibility QA | **Not run** |
 | Tizen Studio package/sign/install | **Not run** |
 | Real Samsung TV / iPhone 14 Pro | **Not connected or tested** |
 | Live AdGuard / Pi-hole / NextDNS / SmartThings | **Not connected or tested** |
 | Bridge TLS | Loopback production entry point tested with a generated fixture certificate |
 | Home certificate chain/firewall/VPN deployment | **Not performed** |
-| Cloud IPA packaging workflow | Prepared; **not run on a GitHub Mac yet** |
+| Cloud IPA packaging workflow | **Passed**; unsigned iPhoneOS Release IPA downloaded and checksummed |
 | Windows signing / AltStore installation | **Not performed** |
 
-Grammar and project parsing do not validate Swift type correctness, SDK API
-availability, signing, UI behavior or hardware support. CI is supplied but was
-not pushed, triggered or observed in this session. No simulated result is called
-a real-device success. Tests use generated fixture tokens and explicitly named
-mock hardware. No default/demo TV or sample inventory appears in the app.
+Grammar/project parsing was followed by a real Xcode build and XCTest run.
+Those passes do not establish signing, UI/accessibility quality or hardware
+support. No simulated result is called a real-device success. Tests use generated
+fixture tokens and explicitly named mock hardware. No default/demo TV or sample
+inventory appears in the app.
+
+Observed [successful cloud run](https://github.com/zadwen/TVGuardian/actions/runs/44339943672),
+source revision `5725c3720063b64b2d27a210652f41e57c87dce4`:
+34 Node tests passed on the cloud runner, then 26 XCTest cases passed,
+`TEST SUCCEEDED` and `ARCHIVE SUCCEEDED`. The unsigned device IPA is 500,589 bytes;
+SHA-256 `38cd4f6525fd430e284f68ab06731d70014c0f27b078ffa6ef89b0f577510913`.
+The artifact ZIP hash and nested IPA checksum were verified after downloading.
+There is a nonblocking source deprecation warning for `SecTrustGetCertificateAtIndex`;
+Xcode also reports standard XCTest binary-stripping/AppIntents metadata warnings.
 
 ## Executed contract coverage
 
@@ -68,8 +78,8 @@ node tools/validate-source.mjs
   string-encoded envelopes and malformed events that cannot become empty success.
 
 Use Product → Test in Xcode or the README command. The GitHub workflow selects an
-available iPhone simulator dynamically. A successful future CI run must be
-recorded with its actual log/result bundle before marking iOS validation passed.
+available iPhone simulator dynamically. The observed run and source revision above
+are the validation reference; record new results after application code changes.
 
 ## Required real-device acceptance
 

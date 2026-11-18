@@ -94,6 +94,7 @@ app IDs and parent activity and should be shared deliberately.
   or unauthenticated reset flow. Reinstall/keychain/account migration needs care.
 - No dependency is required by the production bridge; optional QA dependencies
   are not shipped in the app. Do not package secret/config/QA working directories.
-- Xcode compilation, signing, TLS deployment and hardware validation remain
+- Xcode compilation and 26 simulator unit tests passed on the cloud Mac. Apple
+  signing, deployment of real service certificates and hardware validation remain
   pending. This document describes implementation, not a completed independent
   security audit or certification.

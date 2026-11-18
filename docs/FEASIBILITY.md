@@ -101,7 +101,8 @@ Sources: [Tailscale subnet routers](https://tailscale.com/docs/features/subnet-r
 
 ## Build and verification boundary
 
-The deliverable is source and an Xcode project, not a signed IPA. Hardware status
-starts unverified. Windows can execute the bridge, companion mocks and structural
-checks. iOS compilation, signing, simulator/UI tests and real-device tests require
-the documented macOS/Xcode workflow. They must not be described as passed here.
+The initial deliverable was source and an Xcode project. After a GitHub repository
+was supplied, the cloud Mac build passed on 2026-11-18 with Xcode 26.6: 26 XCTest
+cases and a Release iPhone archive succeeded. The generated IPA is unsigned and
+can be signed using the documented Windows workflow. UI/device QA, signing and
+real TV testing remain pending. Hardware status starts unverified.

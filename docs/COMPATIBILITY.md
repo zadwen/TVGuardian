@@ -50,8 +50,9 @@ a response for one ID does not establish support for every app.
 
 ## Remaining release limitations
 
-- Apple SDK type checking, simulator execution, UI/accessibility/device QA,
-  signing and distribution are pending on macOS. This is not an App Store release.
+- Apple SDK builds and all 26 XCTest cases passed on a GitHub Mac with Xcode 26.6.
+  UI/accessibility/device QA, Apple signing and phone installation remain pending.
+  The generated device IPA is unsigned; this is not an App Store release.
 - No exact TV manual or firmware-specific regression result is available yet.
 - Bonjour can miss TVs; raw SSDP is not shipped. A raw multicast implementation
   would require Apple's restricted entitlement and additional device testing.

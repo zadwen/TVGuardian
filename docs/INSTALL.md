@@ -2,9 +2,9 @@
 
 **Using Windows without a Mac?** Follow [the cloud-build and Windows installation
 guide](WINDOWS.md). A GitHub-hosted Mac can compile the app; AltStore/AltServer on
-Windows can perform subsequent Apple signing and installation. That workflow is
-prepared but has not yet produced a verified build. The local-Xcode route below
-is optional if you later have access to a Mac.
+Windows can perform subsequent Apple signing and installation. The first cloud
+build and 26 XCTest cases passed on 2026-11-18. The unsigned IPA is ready for
+Windows signing; the local-Xcode route below is optional.
 
 ## Build environment
 
@@ -15,9 +15,9 @@ this project using an Apple signing environment that is not present.
 
 1. Copy/extract the complete project folder onto the Mac.
 2. Open `ios/TVGuardian.xcodeproj`, select the TVGuardian scheme.
-3. Run Product → Test on an installed iPhone simulator. The supplied 26 XCTest
-   cases were not executed in the Windows workspace. Resolve any compiler or
-   simulator failures before installing on a family device.
+3. Run Product → Test on an installed iPhone simulator. All 26 supplied XCTest
+   cases passed on GitHub's cloud Mac using Xcode 26.6. Repeat after code changes
+   and resolve failures before installing on a family device.
 4. Select the TVGuardian target → Signing & Capabilities. Choose your Apple
    team, keep automatic signing and change `com.example.TVGuardian` to an
    identifier owned by your team. Set the test bundle identifier consistently

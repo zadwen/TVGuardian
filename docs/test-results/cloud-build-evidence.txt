@@ -1,0 +1,18 @@
+TV Guardian cloud build verification — 2026-11-18
+Repository: https://github.com/zadwen/TVGuardian
+Run: https://github.com/zadwen/TVGuardian/actions/runs/44339943672
+Compiled source commit: 5725c3720063b64b2d27a210652f41e57c87dce4
+Job: 134926838076
+Xcode: 26.6, build 17F113
+Runner: macOS 26 ARM64
+Simulator: iPhone 17 Pro, iOS 26.4.1
+Node tests: 34 passed, 0 failed
+XCTest: Executed 26 tests, with 0 failures (0 unexpected)
+TEST SUCCEEDED
+ARCHIVE SUCCEEDED
+Unsigned IPA bytes: 500589
+Unsigned IPA SHA256: 38cd4f6525fd430e284f68ab06731d70014c0f27b078ffa6ef89b0f577510913
+Downloaded artifact ZIP SHA256: 43b0234950f531fb6f01229b3d13a02caa54979318539a438435dab023e9fc15
+The outer ZIP digest, nested IPA checksum and Payload app entries were verified.
+Apple signing, Windows installation, actual iPhone 14 Pro and Samsung TV tests
+have not been performed. Simulator test success is not hardware verification.

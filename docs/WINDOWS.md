@@ -4,20 +4,27 @@ You can keep using Windows and your iPhone. Xcode still runs on a Mac, but that
 Mac can be a GitHub-hosted cloud runner. The resulting device build is then
 signed and installed using your Windows PC and your own Apple account.
 
-This route has been prepared in source; **the cloud build has not run yet**.
-There is no compiled IPA until Xcode completes successfully. An unsigned IPA is
-not directly installable. Apple provisioning and the Windows installer's current
-compatibility still apply.
+**The first cloud build passed on 2026-11-18:** all 26 XCTest cases and the device
+archive succeeded using Xcode 26.6. The compiled unsigned IPA is saved locally at
+`dist/TVGuardian-unsigned.ipa`, with a ZIP at `dist/TVGuardian-Windows-install.zip`.
+You can go directly to step 3 below. The package needs Apple signing through the
+Windows installer before it can run on your phone.
+
+[Successful run and downloadable artifacts](https://github.com/zadwen/TVGuardian/actions/runs/44339943672).
+GitHub artifacts from this run expire on 2026-11-21; the local downloaded files
+remain available. SHA-256 of the compiled IPA:
+
+`38cd4f6525fd430e284f68ab06731d70014c0f27b078ffa6ef89b0f577510913`
 
 ## 1. Choose a GitHub repository
 
-Create an empty repository named `TVGuardian` under your account, preferably
-private, and provide its link to the agent so the prepared source can be uploaded.
+The project is uploaded to [zadwen/TVGuardian](https://github.com/zadwen/TVGuardian).
+Use that repository for future builds, or choose another repository you control.
 No Apple password, signing certificate or provisioning profile is needed for
 this build workflow. Do not upload the ZIP as a single repository file: the
 actual extracted files, including `.github/workflows`, must be at the root.
 
-If uploading yourself on Windows, use Git/GitHub Desktop to publish these source
+If moving/uploading the project yourself on Windows, use Git/GitHub Desktop to publish these source
 paths: `ios`, `bridge`, `companion`, `docs`, `tools`, `.github`, `.gitattributes`,
 `.gitignore`, `README.md` and `LICENSE`. Keep `.build`, `.research`, `dist`, local
 configuration, certificate/private-key files and generated secret files out.
