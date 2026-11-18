@@ -56,15 +56,17 @@ print(identifier)
 PY
 )"
 
-# Simulator tests use the project's own app/test identifiers. The device archive
-# then overrides only the application identifier; no signing team is supplied.
+# Simulator tests use local ad-hoc signatures so iOS can grant the real Keychain
+# entitlement. Disabling signatures makes Keychain fail with -34018 and never
+# exercises the PIN gate. No Apple account or certificate is used for this.
+# The device archive remains unsigned for the user's Windows installer.
 xcodebuild test \
   -project ios/TVGuardian.xcodeproj \
   -scheme TVGuardian \
   -destination "platform=iOS Simulator,arch=arm64,id=$SIMULATOR_ID" \
   -parallel-testing-enabled NO \
   -resultBundlePath "$RESULT_BUNDLE_PATH" \
-  CODE_SIGNING_ALLOWED=NO \
+  CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= \
   2>&1 | tee "$ARTIFACTS/ios-tests.log"
 
 xcodebuild archive \
