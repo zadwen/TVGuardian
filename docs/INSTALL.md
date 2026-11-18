@@ -2,8 +2,8 @@
 
 **Using Windows without a Mac?** Follow [the cloud-build and Windows installation
 guide](WINDOWS.md). A GitHub-hosted Mac can compile the app; AltStore/AltServer on
-Windows can perform subsequent Apple signing and installation. The first cloud
-build and 26 XCTest cases passed on 2026-11-18. The unsigned IPA is ready for
+Windows can perform subsequent Apple signing and installation. The v0.1.1 cloud
+build, 26 unit tests and 2 interface tests passed on 2026-11-18 UTC. The unsigned IPA is ready for
 Windows signing; the local-Xcode route below is optional.
 
 ## Build environment
@@ -83,9 +83,10 @@ use a separately planned, authenticated recovery feature before broader release.
 6. Open Installed Applications and refresh. Allow up to the displayed timeout.
    A returned list may be incomplete. Try the optional foreground companion if
    needed; a failure stays unverified rather than showing sample data.
-7. Open TV Settings. Record the exact full model code and firmware from Support
-   → About This TV if they are absent from the API. The supplied screenshot does
-   not contain these identifiers.
+7. Open TV Settings. Confirm the exact full model code and firmware from Support
+   → About This TV if they are absent from the API. Windows metadata diagnostics
+   identified `UA85M80HAUXZN`; firmware was reported as `Unknown` and still needs
+   confirmation on the TV.
 
 ## Verify parental restrictions
 

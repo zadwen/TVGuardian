@@ -4,11 +4,13 @@ Native SwiftUI iPhone controller for Samsung Tizen TVs, with direct app discover
 launch requests, observed app-close verification, parent authentication, honest
 capability reporting and optional DNS/foreground-companion integrations.
 
-**An unsigned iPhone build is available.** The GitHub cloud Mac completed the
-Xcode 26.6 build, all 26 iOS tests and a Release device archive on 2026-11-18.
-Use [Windows signing/install instructions](docs/WINDOWS.md). Signing, installation
-on your iPhone and testing on your TV remain pending; no signed IPA or verified
-support for the photographed TV is claimed. [Successful build](https://github.com/zadwen/TVGuardian/actions/runs/44339943672).
+**v0.1.1 fixes the Save TV flow.** The GitHub cloud Mac passed 26 unit tests,
+2 interface tests and a Release device archive on 2026-11-18 UTC. Saving a TV,
+reopening with its saved entry and requiring the parent PIN after backgrounding
+were verified in the simulator. The unsigned device IPA needs the documented
+[Windows signing/install workflow](docs/WINDOWS.md).
+The user installed v0.1.0; v0.1.1 phone pairing and TV app operations still need
+real-device verification. [Successful build](https://github.com/zadwen/TVGuardian/actions/runs/44392060961).
 
 ## The most important limitation
 
@@ -54,7 +56,8 @@ necessary. Read [feasibility](docs/FEASIBILITY.md) and [compatibility](docs/COMP
 **No Mac required at home:** use the prepared [cloud-build → Windows install
 route](docs/WINDOWS.md). GitHub runs Xcode on its Mac runner; a successful run
 produces an unsigned device IPA for subsequent signing with AltServer/AltStore
-on Windows. The first cloud build passed; phone signing and installation are pending.
+on Windows. Install v0.1.1 over the existing app with the same account and bundle
+identifier to preserve local data.
 
 If you have access to a Mac, use the local route:
 
@@ -81,6 +84,7 @@ and [test results/acceptance steps](docs/TESTING.md) are included.
 | `ios/TVGuardian/Filtering` | Provider-specific DNS contracts and verified rule changes |
 | `ios/TVGuardian/Views` | SwiftUI management screens |
 | `ios/TVGuardianTests` | 26 XCTest cases; passed on the GitHub cloud Mac |
+| `ios/TVGuardianUITests` | Save/reopen and background PIN regression checks; passed in the simulator |
 | `companion` | Public Tizen Web app and hardware-mock inventory tests |
 | `bridge` | Dependency-free Node.js HTTPS inventory bridge and contract tests |
 | `tools` | Reproducible project/icons, structural checks, optional grammar QA |

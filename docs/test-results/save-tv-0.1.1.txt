@@ -1,0 +1,25 @@
+TV Guardian v0.1.1 (build 2) — verified 2026-11-18 UTC
+Repository: https://github.com/zadwen/TVGuardian
+Run: https://github.com/zadwen/TVGuardian/actions/runs/44392060961
+Compiled source commit: 7d7796b6e62111ea6f70ed595b45e1911008d0a8
+Job: 135112050712
+Xcode: 26.6, build 17F113
+Runner: macOS 26 ARM64
+Simulator: iPhone 17 Pro, iOS 26.4 runtime
+Node tests: 34 passed, 0 failed
+Unit XCTest: 26 passed, 0 failed
+UI XCTest: 2 passed, 0 failed
+Background PIN test: passed (35.152 seconds)
+Save/select/reopen test: passed (39.853 seconds)
+TEST SUCCEEDED
+ARCHIVE SUCCEEDED
+Unsigned IPA bytes: 515283
+Unsigned IPA SHA256: c8aee153caf5a99b52a5bed1547fcd5a06975d37c31a7755a28083af109e98e3
+Downloaded IPA artifact ZIP SHA256: 1109d87ba347e777b6cf0ad33d4648930d8f5d4503ac879d22f492b26004bcbe
+Downloaded diagnostics ZIP SHA256: 1a837bcc0515f00fbe475c9e0110152387a4e229d66a9c7034855811728197a4
+Verified bundle: com.zadwen.TVGuardian, 0.1.1 (2), iPhoneOS, minimum iOS 17.0
+Verified Payload/TVGuardian.app executable and Info.plist; unsigned as expected.
+Saved-TV and background-PIN screenshots exported and visually inspected.
+The TV fixture is explicitly named UI fixture TV and is never contacted.
+Phone installation of v0.1.0 was reported by the user. v0.1.1 installation,
+TV pairing, app control, Face ID and TV-side enforcement remain unverified.

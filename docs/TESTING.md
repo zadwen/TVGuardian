@@ -1,33 +1,44 @@
 # Verification record
 
 Date: 2026-11-18. Local host: Windows, Node.js v26.13.1. Cloud host:
-GitHub macOS 26 ARM64, Xcode 26.6 (17F113), iPhone 17 Pro / iOS 26.4.1 simulator.
+GitHub macOS 26 ARM64, Xcode 26.6 (17F113), iPhone 17 Pro / iOS 26.4 simulator.
 
 | Check | Observed result |
 |---|---|
 | Node bridge, companion mocks and structural suite | **34 passed, 0 failed** |
 | Production JavaScript syntax | Checked through parsing/executed imports and `node --check` |
-| Xcode project parse | Passed Apache `xcode` 4.0.0 parser; 2 native targets |
-| Swift grammar | 29 files, 0 syntax errors with tree-sitter Swift grammar |
+| Xcode project parse | Passed Apache `xcode` 4.0.0 parser; 3 native targets |
+| Swift grammar | 31 files, 0 syntax errors with tree-sitter Swift grammar |
 | Info.plist, privacy manifest, Tizen XML | Parsed as XML |
 | iOS Xcode build/type checking | **Passed on GitHub's Mac, Xcode 26.6** |
 | iOS XCTest | **26 passed, 0 failed** in the iPhone simulator |
-| Native SwiftUI visual/accessibility QA | **Not run** |
+| Native SwiftUI interface regression | **2 passed, 0 failed**: save/select/reopen and background PIN lock; screenshots inspected |
 | Tizen Studio package/sign/install | **Not run** |
-| Real Samsung TV / iPhone 14 Pro | **Not connected or tested** |
+| Real Samsung TV / iPhone 14 Pro | User installed v0.1.0; Save TV issue reported. PC read-only metadata observed; authenticated phone management unverified |
 | Live AdGuard / Pi-hole / NextDNS / SmartThings | **Not connected or tested** |
 | Bridge TLS | Loopback production entry point tested with a generated fixture certificate |
 | Home certificate chain/firewall/VPN deployment | **Not performed** |
 | Cloud IPA packaging workflow | **Passed**; unsigned iPhoneOS Release IPA downloaded and checksummed |
-| Windows signing / AltStore installation | **Not performed** |
+| Windows signing / AltStore installation | User reports successful v0.1.0 installation; agent did not inspect signing credentials |
 
 Grammar/project parsing was followed by a real Xcode build and XCTest run.
-Those passes do not establish signing, UI/accessibility quality or hardware
+Those passes do not establish full UI/accessibility quality or hardware
 support. No simulated result is called a real-device success. Tests use generated
 fixture tokens and explicitly named mock hardware. No default/demo TV or sample
 inventory appears in the app.
 
-Observed [successful cloud run](https://github.com/zadwen/TVGuardian/actions/runs/44339943672),
+Latest verified release: **v0.1.1 (build 2)**,
+[successful cloud run](https://github.com/zadwen/TVGuardian/actions/runs/44392060961),
+source `7d7796b6e62111ea6f70ed595b45e1911008d0a8`. All 34 Node tests, 26 unit tests
+and 2 UI tests passed, followed by `TEST SUCCEEDED` and `ARCHIVE SUCCEEDED`.
+The unsigned device IPA is 515,283 bytes; SHA-256
+`c8aee153caf5a99b52a5bed1547fcd5a06975d37c31a7755a28083af109e98e3`.
+The ZIP digest, nested IPA checksum, app bundle identifier, version, iPhoneOS
+platform and iOS 17 deployment target were checked after downloading.
+Saved-TV and background-PIN screenshots were visually inspected. These checks
+do not pair with the user's TV. The fixture address is never contacted.
+
+Historical v0.1.0 [cloud run](https://github.com/zadwen/TVGuardian/actions/runs/44339943672),
 source revision `5725c3720063b64b2d27a210652f41e57c87dce4`:
 34 Node tests passed on the cloud runner, then 26 XCTest cases passed,
 `TEST SUCCEEDED` and `ARCHIVE SUCCEEDED`. The unsigned device IPA is 500,589 bytes;
@@ -76,6 +87,14 @@ node tools/validate-source.mjs
   error within HTTP 200, token expiry, plaintext rejection and malformed JSON.
 - Three Samsung message tests: exact reported IDs, unknown system status,
   string-encoded envelopes and malformed events that cannot become empty success.
+- Two interface regressions using real PIN enrollment/unlock and visible controls:
+  manual name/address entry with keyboard dismissal, Save feedback, independent
+  TV selection, persistence after process restart, background locking and fresh
+  navigation after unlocking. The generated test PIN lives in the test runner's
+  protected container so a runner restart preserves the fixture. It never resets
+  the application's PIN, reads its secrets or bypasses authentication. Tests need
+  a fresh simulator. Simulator apps are locally ad-hoc signed to exercise Keychain;
+  no Apple credentials or device-signing certificate are used in CI.
 
 Use Product → Test in Xcode or the README command. The GitHub workflow selects an
 available iPhone simulator dynamically. The observed run and source revision above

@@ -4,17 +4,19 @@ You can keep using Windows and your iPhone. Xcode still runs on a Mac, but that
 Mac can be a GitHub-hosted cloud runner. The resulting device build is then
 signed and installed using your Windows PC and your own Apple account.
 
-**The first cloud build passed on 2026-11-18:** all 26 XCTest cases and the device
-archive succeeded using Xcode 26.6. The compiled unsigned IPA is saved locally at
-`dist/TVGuardian-unsigned.ipa`, with a ZIP at `dist/TVGuardian-Windows-install.zip`.
+**v0.1.1 (build 2) passed on 2026-11-18 UTC:** 26 unit tests, 2 interface tests and
+the device archive succeeded using Xcode 26.6. This update fixes saving a TV and
+clears the stale locked-session message. The compiled unsigned IPA is saved at
+`dist/TVGuardian-0.1.1-unsigned.ipa`, with a ZIP at
+`dist/TVGuardian-0.1.1-Windows-install.zip`.
 You can go directly to step 3 below. The package needs Apple signing through the
 Windows installer before it can run on your phone.
 
-[Successful run and downloadable artifacts](https://github.com/zadwen/TVGuardian/actions/runs/44339943672).
+[Successful run and downloadable artifacts](https://github.com/zadwen/TVGuardian/actions/runs/44392060961).
 GitHub artifacts from this run expire on 2026-11-21; the local downloaded files
 remain available. SHA-256 of the compiled IPA:
 
-`38cd4f6525fd430e284f68ab06731d70014c0f27b078ffa6ef89b0f577510913`
+`c8aee153caf5a99b52a5bed1547fcd5a06975d37c31a7755a28083af109e98e3`
 
 ## 1. Choose a GitHub repository
 
@@ -86,6 +88,19 @@ Wi-Fi synchronization and iPhone Developer Mode.
    installer's current diagnostics if Apple authorization fails.
 
 Source: [AltStore getting started and refresh limits](https://faq.altstore.io/altstore-classic/your-altstore).
+
+### Update an existing installation
+
+Import the new unsigned IPA through the same AltStore installation and Apple
+account, keeping bundle identifier `com.zadwen.TVGuardian`. Install over the
+existing app to preserve its local PIN, rules and pairings. Use the existing
+parent PIN after opening the update.
+
+In Connected TVs, enter a name and private IP, dismiss the keyboard with Done,
+then tap Save TV. The v0.1.1 save flow shows a result and returns to Saved TVs.
+Saving is local; it does not require the TV to be online and does not pair it.
+Turn on the TV before Pair / reconnect, review the certificate and approve the
+connection prompt on the TV. See [pairing](INSTALL.md#pair-locally).
 
 This is developer sideloading with Apple signing, not a signing bypass. Windows
 cannot compile the SwiftUI/Xcode project locally using these tools. The cloud

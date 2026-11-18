@@ -1,9 +1,15 @@
 # Feature compatibility matrix
 
-Target supplied: **SmartThings label `85" Mini LED`**. Full model/region/firmware
-were not in the supplied picture. Exact-model support is **unverified**.
-No hardware was contacted during development. All device operations below need
-real-device acceptance; “implemented” does not mean “tested on your TV.”
+Target: **Samsung `UA85M80HAUXZN`**, as reported by the TV's local metadata
+response during read-only Windows diagnostics on 2026-11-18. That response also
+reported model family `26_PTM_MD`, token authentication support and firmware
+`Unknown`. Its encrypted control port was reachable from the PC during that
+check; a later certificate probe timed out before any certificate was received
+(TV power state unknown). This verifies earlier identity metadata and PC
+reachability only; phone pairing and application
+management remain **unverified**. The user installed v0.1.0 and reported that
+Save TV did not respond. Exact firmware still requires TV-side confirmation.
+“Implemented” does not mean “tested on your TV.”
 
 | Feature | Implemented path | Default / requirement | Actual enforcement scope |
 |---|---|---|---|
@@ -50,8 +56,10 @@ a response for one ID does not establish support for every app.
 
 ## Remaining release limitations
 
-- Apple SDK builds and all 26 XCTest cases passed on a GitHub Mac with Xcode 26.6.
-  UI/accessibility/device QA, Apple signing and phone installation remain pending.
+- v0.1.1 Apple SDK builds, 26 unit tests and 2 UI regressions passed on a GitHub
+  Mac with Xcode 26.6. Saved-TV and background-PIN screenshots were inspected;
+  full accessibility/device QA remains pending. The user installed v0.1.0;
+  v0.1.1 phone pairing and app management still need acceptance testing.
   The generated device IPA is unsigned; this is not an App Store release.
 - No exact TV manual or firmware-specific regression result is available yet.
 - Bonjour can miss TVs; raw SSDP is not shipped. A raw multicast implementation

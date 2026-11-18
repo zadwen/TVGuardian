@@ -1,9 +1,13 @@
 # TV Guardian feasibility record
 
 Research date: 2026-11-18. Target phone: iPhone 14 Pro, iOS 17 or later.
-The supplied photo identifies a SmartThings label, `85" Mini LED`, only. Model,
-region, model year, firmware and the TV's actual responses remain unknown.
-No TV, iPhone, Apple signing account or Mac is connected to this Windows workspace.
+The initial photo identified only the SmartThings label `85" Mini LED`.
+Subsequent read-only local metadata diagnostics reported model `UA85M80HAUXZN`,
+family `26_PTM_MD`, token authentication support and firmware `Unknown`.
+The encrypted control port was reachable from the Windows PC. The user installed
+v0.1.0 on the iPhone and reported an unresponsive Save TV button. Authenticated
+TV pairing, app management and exact firmware compatibility remain unverified.
+Apple signing credentials are not stored in this workspace; Xcode runs on GitHub's Mac.
 
 ## Management boundary
 
@@ -102,7 +106,8 @@ Sources: [Tailscale subnet routers](https://tailscale.com/docs/features/subnet-r
 ## Build and verification boundary
 
 The initial deliverable was source and an Xcode project. After a GitHub repository
-was supplied, the cloud Mac build passed on 2026-11-18 with Xcode 26.6: 26 XCTest
-cases and a Release iPhone archive succeeded. The generated IPA is unsigned and
-can be signed using the documented Windows workflow. UI/device QA, signing and
-real TV testing remain pending. Hardware status starts unverified.
+was supplied, the cloud Mac build passed on 2026-11-18 with Xcode 26.6. The v0.1.1
+update passed 26 unit tests, 2 interface regressions and a Release iPhone archive.
+The generated IPA is unsigned and can be signed using the documented Windows
+workflow. The user installed v0.1.0; v0.1.1 phone pairing, TV app management and
+full device/accessibility QA remain pending. Hardware management starts unverified.
