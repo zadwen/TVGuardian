@@ -65,6 +65,9 @@ xcodebuild test \
   -scheme TVGuardian \
   -destination "platform=iOS Simulator,arch=arm64,id=$SIMULATOR_ID" \
   -parallel-testing-enabled NO \
+  -test-timeouts-enabled YES \
+  -default-test-execution-time-allowance 120 \
+  -maximum-test-execution-time-allowance 180 \
   -resultBundlePath "$RESULT_BUNDLE_PATH" \
   CODE_SIGNING_ALLOWED=YES CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= \
   2>&1 | tee "$ARTIFACTS/ios-tests.log"
