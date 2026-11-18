@@ -18,6 +18,9 @@ test('structural check: generated project references every Swift source and a sh
     const path = relative(resolve(root, 'ios'), file).replaceAll('\\', '/'); assert.ok(project.includes(JSON.stringify(path)), path);
   }
   assert.ok(project.includes('com.apple.product-type.application')); assert.ok(project.includes('com.apple.product-type.bundle.unit-test'));
+  assert.ok(project.includes('com.apple.product-type.bundle.ui-testing'));
+  const scheme = await readFile(resolve(root, 'ios/TVGuardian.xcodeproj/xcshareddata/xcschemes/TVGuardian.xcscheme'), 'utf8');
+  assert.ok(scheme.includes('TVGuardianUITests.xctest'));
   await access(resolve(root, 'ios/TVGuardian.xcodeproj/xcshareddata/xcschemes/TVGuardian.xcscheme'));
 });
 test('structural check: companion requests only public inventory and internet privileges', async () => {

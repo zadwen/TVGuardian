@@ -23,6 +23,17 @@ fi
 mkdir -p "$PROJECT_ROOT/build/cloud-artifacts"
 ARTIFACTS="$PROJECT_ROOT/build/cloud-artifacts"
 RUN_DIRECTORY="$(mktemp -d "$PROJECT_ROOT/build/cloud-run.XXXXXXXX")"
+RESULT_BUNDLE_PATH="$RUN_DIRECTORY/TVGuardian-tests.xcresult"
+collect_test_results() {
+  local original_status=$?
+  trap - EXIT
+  if [[ -d "$RESULT_BUNDLE_PATH" ]]; then
+    ditto "$RESULT_BUNDLE_PATH" "$ARTIFACTS/TVGuardian-tests.xcresult" || true
+    xcrun xcresulttool export attachments --path "$RESULT_BUNDLE_PATH" --output-path "$ARTIFACTS/ui-screenshots" >/dev/null 2>&1 || true
+  fi
+  exit "$original_status"
+}
+trap collect_test_results EXIT
 xcodebuild -version | tee "$ARTIFACTS/xcode-version.log"
 node --test bridge/test/*.test.mjs companion/test/*.test.mjs tools/test/*.test.mjs 2>&1 | tee "$ARTIFACTS/contracts.log"
 
@@ -50,8 +61,9 @@ PY
 xcodebuild test \
   -project ios/TVGuardian.xcodeproj \
   -scheme TVGuardian \
-  -destination "platform=iOS Simulator,id=$SIMULATOR_ID" \
-  -resultBundlePath "$RUN_DIRECTORY/TVGuardian-tests.xcresult" \
+  -destination "platform=iOS Simulator,arch=arm64,id=$SIMULATOR_ID" \
+  -parallel-testing-enabled NO \
+  -resultBundlePath "$RESULT_BUNDLE_PATH" \
   CODE_SIGNING_ALLOWED=NO \
   2>&1 | tee "$ARTIFACTS/ios-tests.log"
 

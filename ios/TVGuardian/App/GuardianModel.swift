@@ -14,6 +14,8 @@ struct TVTrustReview: Identifiable { var id = UUID(); var tvID: UUID; var host: 
     @Published private(set) var storageIssue: String?
     @Published private(set) var auditEvents: [AuditEvent] = []
     @Published private(set) var icons: [String: Data] = [:]
+    @Published private(set) var isParentUnlocked = false
+    @Published private(set) var sessionID = UUID()
     let admin = Administrator()
     let discovery = DiscoveryService()
     let dns = DNSService()
@@ -28,6 +30,7 @@ struct TVTrustReview: Identifiable { var id = UUID(); var tvID: UUID; var host: 
     private var idleTimer: Timer?
     private var idleDeadline = Date()
     private var automaticReconnectSuspended = false
+    private var authenticationObservation: AnyCancellable?
     var selectedTV: TVRecord? { state.tvs.first { $0.id == state.selectedTVID } }
     var profile: ChildProfile? { state.profiles.first { $0.id == state.activeProfileID } }
     init() {
@@ -38,6 +41,12 @@ struct TVTrustReview: Identifiable { var id = UUID(); var tvID: UUID; var host: 
         admin.onAudit = { [weak self] outcome, detail in
             guard let self else { return }
             do { try self.record("authentication", outcome, detail) } catch { self.storageIssue = error.localizedDescription; self.lock() }
+        }
+        authenticationObservation = admin.$isUnlocked.removeDuplicates().sink { [weak self] unlocked in
+            guard let self else { return }
+            self.isParentUnlocked = unlocked
+            self.sessionID = UUID()
+            if unlocked { self.unlocked() } else { self.finishLock() }
         }
     }
     func touch() { idleDeadline = Date().addingTimeInterval(300) }
@@ -82,14 +91,20 @@ struct TVTrustReview: Identifiable { var id = UUID(); var tvID: UUID; var host: 
         }
     }
     func lock() {
-        admin.lock(); operation?.cancel(); operation = nil; operationID = nil; busy = false
+        let wasAlreadyLocked = !admin.isUnlocked
+        admin.lock()
+        if wasAlreadyLocked { finishLock() }
+    }
+    private func finishLock() {
+        operation?.cancel(); operation = nil; operationID = nil; busy = false
         monitor?.cancel(); monitor = nil; client.disconnect(); discovery.stop()
         idleTimer?.invalidate(); idleTimer = nil
         connected = false; connectionMessage = "Locked — TV channel disconnected"
         trustReview = nil; notice = nil; errorMessage = nil; icons = [:]
     }
-    func unlocked() {
+    private func unlocked() {
         touch()
+        connectionMessage = "Disconnected — select a TV to connect"
         idleTimer?.invalidate()
         idleTimer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
@@ -143,16 +158,28 @@ struct TVTrustReview: Identifiable { var id = UUID(); var tvID: UUID; var host: 
         }
         connected = true; connectionMessage = "Connected securely to \(metadata.name)"
     }
-    func addTV(host: String, name: String) {
-        run("save TV") {
-            guard Validation.privateIPv4(host) else { throw GuardianError.invalid("Enter a private IPv4 TV address, such as 192.168.1.50. Public addresses and URLs are rejected.") }
-            if let existing = self.state.tvs.first(where: { $0.host == host }) {
-                try self.save { $0.selectedTVID = existing.id }; self.client.disconnect(); self.connected = false; self.icons = [:]; return
+    @discardableResult func addTV(host: String, name: String) -> Bool {
+        do {
+            try requireAccess()
+            guard !busy else { throw GuardianError.unavailable("Wait for the current operation before saving this TV.") }
+            let address = host.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard Validation.privateIPv4(address) else { throw GuardianError.invalid("Enter a private IPv4 TV address, such as 192.168.1.50. Public addresses and URLs are rejected.") }
+            try record("save TV", "requested", "Parent requested saving a private TV address.")
+            if let existing = state.tvs.first(where: { $0.host == address }) {
+                try save { $0.selectedTVID = existing.id }
+            } else {
+                let label = name.trimmingCharacters(in: .whitespacesAndNewlines)
+                let tv = TVRecord(name: label.isEmpty ? "Samsung TV" : String(label.prefix(80)), host: address)
+                try save { $0.tvs.append(tv); $0.selectedTVID = tv.id }
             }
-            let tv = TVRecord(name: name.isEmpty ? "Samsung TV" : String(name.prefix(80)), host: host)
-            try self.save { $0.tvs.append(tv); $0.selectedTVID = tv.id }
-            self.client.disconnect(); self.connected = false
-            try self.record("save TV", "saved", "A private TV address was saved. It has not been paired or verified.")
+            client.disconnect(); connected = false; icons = [:]
+            connectionMessage = "TV saved — ready to pair"
+            notice = "TV saved. Tap Pair / reconnect under Saved TVs."
+            try record("save TV", "saved", "A private TV address was saved. It has not been paired or verified.")
+            return true
+        } catch {
+            errorMessage = error.localizedDescription
+            return false
         }
     }
     func selectTV(_ id: UUID) {

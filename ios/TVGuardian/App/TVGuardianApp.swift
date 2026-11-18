@@ -2,27 +2,26 @@ import SwiftUI
 
 @main struct TVGuardianApp: App {
     @StateObject private var model = GuardianModel()
-    var body: some Scene { WindowGroup { SessionView(model: model, admin: model.admin).environmentObject(model) } }
+    var body: some Scene { WindowGroup { SessionView(model: model).environmentObject(model) } }
 }
 
 struct SessionView: View {
     @ObservedObject var model: GuardianModel
-    @ObservedObject var admin: Administrator
     @Environment(\.scenePhase) private var scenePhase
     var body: some View {
         ZStack {
             if let issue = model.storageIssue {
                 ContentUnavailableView("Saved data needs attention", systemImage: "lock.trianglebadge.exclamationmark", description: Text(issue + " Management is locked; preserve the app data for investigation."))
-            } else if admin.isUnlocked { MainTabs() }
-            else { AdministratorGate(admin: admin, faceIDEnabled: model.state.useFaceID) }
+            } else if model.isParentUnlocked { MainTabs().id(model.sessionID) }
+            else { AdministratorGate(admin: model.admin, faceIDEnabled: model.state.useFaceID) }
             if scenePhase != .active {
                 Color(.systemBackground).ignoresSafeArea()
                 Label("TV Guardian", systemImage: "shield.lefthalf.filled").font(.title.bold())
             }
         }
         .tint(.teal)
-        .simultaneousGesture(TapGesture().onEnded { if admin.isUnlocked { model.touch() } })
-        .onChange(of: admin.isUnlocked) { _, unlocked in if unlocked { model.unlocked() } }
+        .background(UserActivityObserver { if model.isParentUnlocked { model.touch() } }.frame(width: 0, height: 0))
+        .onReceive(NotificationCenter.default.publisher(for: UITextField.textDidChangeNotification)) { _ in if model.isParentUnlocked { model.touch() } }
         .onChange(of: scenePhase) { _, phase in if phase == .background { model.lock() } }
         .alert("Operation needs attention", isPresented: Binding(get: { model.errorMessage != nil }, set: { if !$0 { model.errorMessage = nil } })) {
             Button("OK") { model.errorMessage = nil }
@@ -45,7 +44,7 @@ struct AdministratorGate: View {
                 Text("Manage your TV with clear limits and a protected parent session.").foregroundStyle(.secondary)
                 SecureField("6–12 digit administrator PIN", text: $pin).keyboardType(.numberPad).textContentType(.password).textFieldStyle(.roundedBorder).accessibilityIdentifier("administratorPIN")
                 if !admin.hasPIN {
-                    SecureField("Confirm administrator PIN", text: $confirmation).keyboardType(.numberPad).textFieldStyle(.roundedBorder)
+                    SecureField("Confirm administrator PIN", text: $confirmation).keyboardType(.numberPad).textFieldStyle(.roundedBorder).accessibilityIdentifier("administratorPINConfirmation")
                     Text("This PIN belongs to TV Guardian. It does not change the Samsung TV PIN. A forgotten PIN has no in-app bypass.").font(.footnote).foregroundStyle(.secondary)
                 }
                 if let message = admin.message { Text(message).foregroundStyle(.red).font(.callout) }

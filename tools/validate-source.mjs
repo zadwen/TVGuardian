@@ -10,7 +10,7 @@ const xcode = requireQA('xcode');
 const project = xcode.project(resolve(root, 'ios/TVGuardian.xcodeproj/project.pbxproj'));
 project.parseSync();
 const targets = Object.values(project.hash.project.objects.PBXNativeTarget).filter(v => typeof v === 'object');
-if (targets.length !== 2) throw new Error('Expected app and test targets.');
+if (targets.length !== 3) throw new Error('Expected app, unit test and UI test targets.');
 console.log(`PBX project parsed: ${targets.length} native targets.`);
 const { Parser, Language } = requireQA('web-tree-sitter');
 await Parser.init();

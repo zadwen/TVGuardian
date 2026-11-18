@@ -9,7 +9,7 @@ struct DashboardView: View {
                     HStack { Image(systemName: "shield.lefthalf.filled").font(.largeTitle); Spacer(); Text("PARENT SESSION").font(.caption.weight(.bold)) }
                     Text(model.selectedTV?.name ?? "Your home, your rules").font(.title.bold())
                     Label(model.connectionMessage, systemImage: model.connected ? "wifi" : "wifi.slash").font(.callout)
-                    NavigationLink("Manage connection") { ConnectedTVsView() }.buttonStyle(.bordered)
+                    NavigationLink("Manage connection") { ConnectedTVsView() }.buttonStyle(.bordered).accessibilityIdentifier("manageConnection")
                 }.foregroundStyle(.white).padding(24).frame(maxWidth: .infinity, alignment: .leading)
                     .background(LinearGradient(colors: [Color(red: 0.02, green: 0.35, blue: 0.38), Color(red: 0.02, green: 0.18, blue: 0.26)], startPoint: .topLeading, endPoint: .bottomTrailing), in: RoundedRectangle(cornerRadius: 26))
                 ScopeNote()
